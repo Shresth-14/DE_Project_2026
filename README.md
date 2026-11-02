@@ -22,12 +22,12 @@
 
 | Role | Name | Enrollment No. | GitHub Username |
 |------|------|----------------|-----------------|
-| Group Lead | | | |
-| Member 2 | | | |
-| Member 3 | | | |
-| Member 4 | | | |
+| Group Lead | Sarthak Gupta | 2501010408 | sarthak-gupta-229 |
+| Member 2 | Shresth Juyal | 2501010436 | Shresth-14 |
+| Member 3 | Yuvansh Juneja | 2501010537 | Yuvanshj |
+| Member 4 | Yashaswi Gusain | 2501010524 | gusainyashaswi |
 
-**Team No.:** ____ · **Section:** ____ · **Repository URL:** ____
+**Team No.:** T0066 · **Section:** E and C · **Repository URL:** https://github.com/Shresth-14/DE_Project_2026
 
 ---
 

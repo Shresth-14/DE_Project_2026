@@ -1,0 +1,110 @@
+---
+title: YouTube database (schema youtube), Team T0066
+---
+erDiagram
+    %% Notation: crow's foot (Information Engineering).
+    %% Solid line   = identifying relationship (the FK is part of the child's PK).
+    %% Dashed line  = non-identifying relationship (the child has its own PK).
+    %% Every column is NOT NULL unless its comment says "nullable".
+
+    USERS ||..o| CHANNELS : "owns"
+    CHANNELS ||..o{ VIDEOS : "uploads"
+    USERS ||--o{ SUBSCRIPTIONS : "subscribes through"
+    CHANNELS ||--o{ SUBSCRIPTIONS : "is subscribed through"
+    USERS |o..o{ WATCH_EVENTS : "watches (nullable, logged-out view)"
+    VIDEOS |o..o{ WATCH_EVENTS : "is watched in (nullable)"
+    WATCH_EVENTS ||..o{ AD_IMPRESSIONS : "shows"
+    USERS ||--o{ VIDEO_REACTIONS : "reacts with"
+    VIDEOS ||--o{ VIDEO_REACTIONS : "receives"
+    USERS ||..o{ COMMENTS : "writes"
+    VIDEOS ||..o{ COMMENTS : "has"
+    COMMENTS |o..o{ COMMENTS : "is replied to by"
+    USERS ||..o{ PLAYLISTS : "creates"
+    PLAYLISTS ||--o{ PLAYLIST_ITEMS : "contains"
+    VIDEOS ||..o{ PLAYLIST_ITEMS : "appears in"
+
+    USERS {
+        integer user_id PK
+        varchar(254) email UK
+        varchar(100) display_name
+        char(2) country_code
+        smallint birth_year "nullable"
+        date premium_until "nullable"
+        timestamptz created_at
+    }
+    CHANNELS {
+        integer channel_id PK
+        integer owner_user_id FK, UK "ON DELETE CASCADE"
+        varchar(30) handle UK
+        varchar(100) channel_name
+        char(2) country_code
+        boolean is_verified "DEFAULT false"
+        varchar(12) monetization_status "DEFAULT NOT_ELIGIBLE"
+        integer subscriber_count "derived, DEFAULT 0"
+        timestamptz created_at
+    }
+    VIDEOS {
+        varchar(11) video_id PK
+        integer channel_id FK "ON DELETE CASCADE"
+        varchar(100) title
+        text description "nullable"
+        varchar(20) category
+        integer duration_sec
+        boolean is_short "derived from duration_sec"
+        boolean is_made_for_kids "DEFAULT false"
+        varchar(9) visibility
+        timestamptz uploaded_at
+        timestamptz published_at "nullable, NULL only if PRIVATE"
+        bigint view_count "derived, DEFAULT 0"
+    }
+    SUBSCRIPTIONS {
+        integer user_id PK, FK "ON DELETE CASCADE"
+        integer channel_id PK, FK "ON DELETE CASCADE"
+        varchar(12) notifications
+        timestamptz subscribed_at
+    }
+    WATCH_EVENTS {
+        bigint watch_id PK
+        integer user_id FK "nullable, ON DELETE SET NULL"
+        varchar(11) video_id FK "nullable, ON DELETE SET NULL"
+        timestamptz started_at
+        integer watch_seconds
+        varchar(10) device
+        varchar(12) traffic_source
+    }
+    VIDEO_REACTIONS {
+        integer user_id PK, FK "ON DELETE CASCADE"
+        varchar(11) video_id PK, FK "ON DELETE CASCADE"
+        varchar(7) reaction
+        timestamptz reacted_at
+    }
+    COMMENTS {
+        integer comment_id PK
+        varchar(11) video_id FK "ON DELETE CASCADE"
+        integer user_id FK "ON DELETE CASCADE"
+        integer parent_comment_id FK "nullable, ON DELETE CASCADE"
+        text body
+        integer like_count "DEFAULT 0"
+        boolean is_pinned "DEFAULT false"
+        timestamptz created_at
+    }
+    PLAYLISTS {
+        integer playlist_id PK
+        integer owner_user_id FK "ON DELETE CASCADE"
+        varchar(150) title
+        varchar(8) visibility
+        timestamptz created_at
+    }
+    PLAYLIST_ITEMS {
+        integer playlist_id PK, FK, UK "ON DELETE CASCADE"
+        smallint position PK
+        varchar(11) video_id FK, UK "ON DELETE CASCADE, UK is (playlist_id, video_id)"
+        timestamptz added_at
+    }
+    AD_IMPRESSIONS {
+        bigint impression_id PK
+        bigint watch_id FK "ON DELETE RESTRICT"
+        varchar(7) ad_format
+        numeric revenue_inr "numeric(10,4), exact money"
+        timestamptz shown_at
+    }

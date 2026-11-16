@@ -1,14 +1,8 @@
--- =====================================================================
--- YouTube DBMS Project: Phase 4 Optimized Workload
--- Team T0066 | DE_Project_2026
---
--- RULES
---   * Benchmark with: ./benchmarks/run_benchmark.sh <db> optimized [runs] sql/06_optimized_queries.sql
---   * Only R13 and R19 are rewritten; all other queries are identical to workload_30.sql.
---   * R13 fixes a semantic NULL bug in NOT IN by using NOT EXISTS.
---   * R19 converts two correlated subqueries into pre-aggregated set-based joins.
---   * W01–W05 write queries remain inside BEGIN ... ROLLBACK so data stays unchanged.
--- =====================================================================
+-- Phase 4: Optimized Workload
+-- Team T0066
+-- Only R13 and R19 are rewritten; all other queries are identical to workload_30.sql.
+-- R13 fixes NULL handling by replacing NOT IN with NOT EXISTS.
+-- R19 replaces correlated subqueries with pre-aggregated joins.
 SET search_path TO youtube;
 BEGIN;
 
@@ -126,12 +120,10 @@ ORDER BY views DESC;
 
 -- @R13
 -- Creator insights: subscribers of channel 217 who have never watched any of its videos
--- REWRITE REASON: In the original query, "s.user_id NOT IN (SELECT w.user_id ...)" failed because
--- watch_events contains logged-out views where user_id IS NULL (24 rows for channel 217).
--- In SQL three-valued logic, "x NOT IN (val1, val2, ..., NULL)" evaluates to UNKNOWN for all rows,
+-- Rewritten: watch_events contains logged-out views where user_id IS NULL (24 rows for channel 217).
+-- In SQL three-valued logic, NOT IN with a NULL in the subquery yields UNKNOWN for non-matching rows,
 -- causing the original query to return 0 rows.
--- REWRITE: Replacing NOT IN with correlated NOT EXISTS correctly handles NULLs and returns the true
--- 88 subscribers of channel 217 who have never watched any of its videos. Output columns and aliases preserved.
+-- Correlated NOT EXISTS correctly handles NULLs and returns the 88 inactive subscribers.
 SELECT s.user_id, s.subscribed_at
 FROM subscriptions s
 WHERE s.channel_id = 217
@@ -196,11 +188,10 @@ ORDER BY v.video_id;
 
 -- @R19
 -- Partner report: for every monetized channel, its latest upload and its total views
--- REWRITE REASON: Original query ran two correlated scalar subqueries per ELIGIBLE channel (loops=1087),
--- scanning videos and watch_events over 1,000 times each, causing ~24 seconds of execution time.
--- REWRITE: Pre-aggregates video uploads and view counts in joined subqueries once.
--- Uses LEFT JOIN and COALESCE to preserve identical NULL last_upload (for channels with no videos)
--- and 0 total_views (for channels with no views). Output columns, aliases, filter, and ordering preserved.
+-- Rewritten: The original query ran two correlated subqueries per ELIGIBLE channel (loops=1087),
+-- repeatedly scanning videos and watch_events (~24 seconds execution time).
+-- Pre-aggregating in joined subqueries runs once. LEFT JOIN and COALESCE preserve NULL last_upload
+-- and 0 total_views for channels without uploads or views.
 SELECT c.channel_id, c.handle,
        v_agg.last_upload,
        COALESCE(w_agg.total_views, 0) AS total_views

@@ -6,7 +6,7 @@
 
 ## 1. Objective and Database Environment
 
-The objective of Checkpoint 3 (Phase 4: Query Optimization) is to improve the execution performance of the 30-query YouTube database workload without altering query results, corrupting data integrity, or breaking SQL semantics.
+The objective of Checkpoint 3 (Phase 4: Query Optimization) is to improve the execution performance of the 30-query YouTube database workload without altering query results or violating schema constraints.
 
 ### Baseline Schema State
 Following Phase 2 and Checkpoint 2, the database schema contained only primary key and unique constraints created automatically by PostgreSQL:
@@ -49,13 +49,13 @@ To ensure strict comparability:
 Four selective B-tree indexes were deployed to address high-cost access paths identified in the baseline execution plans:
 
 1. **`idx_watch_events_user_started` ON `watch_events (user_id, started_at DESC)`**
-   - *Intended Benefit:* Supports **R05** (User History) and user-centric lookups. Eliminates a full sequential scan across all 200,000 rows of `watch_events`, enabling direct B-tree seeks and pre-sorted tuple retrieval without an explicit sort phase.
+   Supports **R05** (User History). Eliminates the sequential scan across all 200,000 rows of `watch_events`, enabling direct B-tree seeks and returning rows pre-sorted without an explicit sort step.
 2. **`idx_comments_created_at_desc` ON `comments (created_at DESC)`**
-   - *Intended Benefit:* Supports **R23** (Moderation queue pagination). Eliminates the in-memory/external sorting step and completely prevents the 3,656 kB disk sort spill observed in baseline execution. *(Note: As detailed in Section 10, this index removes the sort phase but does not eliminate the sequential index page traversal required by `OFFSET 30000`).*
+   Supports **R23** (Moderation queue pagination). Pre-sorts comments to eliminate the 3,656 kB disk sort spill observed in baseline execution. *(Note: As detailed in Section 10, this index removes the sort phase but does not eliminate the sequential index page traversal required by `OFFSET 30000`).*
 3. **`idx_subscriptions_channel_id` ON `subscriptions (channel_id)`**
-   - *Intended Benefit:* Supports **R24** and **R13** for selective channel lookups (`WHERE channel_id = 217`), enabling fast Bitmap Index Scans by `channel_id`. The existing primary key `(user_id, channel_id)` has `user_id` as its leading column and cannot be used for filtering solely on `channel_id`. *(Note: This index does not produce an Index Only Scan for R24 because `subscribed_at` must still be retrieved from the heap table, nor does W04 use it because unfiltered whole-table aggregation across all 129,253 rows remains cheaper via sequential scan).*
+   Supports **R24** and **R13** for channel lookups (`WHERE channel_id = 217`), enabling fast Bitmap Index Scans by `channel_id`. The existing primary key `(user_id, channel_id)` has `user_id` as its leading column and cannot be used for filtering solely on `channel_id`. *(Note: This does not produce an Index Only Scan for R24 because `subscribed_at` must still be retrieved from the heap table, nor does W04 use it because whole-table aggregation across all 129,253 rows remains cheaper via sequential scan).*
 4. **`idx_watch_events_started_at` ON `watch_events (started_at)`**
-   - *Intended Benefit:* Supports **R10** (Shorts shelf in the last 7 days of June 2026) and **R11** (Trending category rankings in June 2026). Allows the query engine to scan only date-qualifying tuples via an index range scan rather than scanning the entire table.
+   Supports **R10** (Shorts shelf in the last 7 days of June 2026) and **R11** (Trending category rankings in June 2026). Allows the query engine to scan only date-qualifying tuples via an index range scan rather than scanning the entire table.
 
 ---
 
@@ -151,9 +151,9 @@ WHERE s.channel_id = 217
 ```
 
 ### Verification & Performance
-- **Correctness Result:** The corrected query returns the true **88 inactive subscribers**.
-- **Important Distinction:** This change is fundamentally a **correctness bug fix**, restoring intended business logic that was broken by NULL three-valued logic in `NOT IN`.
-- **Performance Impact:** Combined with `idx_subscriptions_channel_id` and `idx_watch_events_user_started`, execution time improved from **26.101 ms** down to **4.748 ms** (**5.5× faster**).
+- **Result:** The corrected query returns the 88 inactive subscribers (the baseline returned 0).
+- **Classification:** This change is a correctness bug fix resolving NULL three-valued logic in `NOT IN`, rather than a pure performance optimization.
+- **Execution Time:** Combined with `idx_subscriptions_channel_id` and `idx_watch_events_user_started`, execution time improved from **26.101 ms** to **4.748 ms** (**5.5× faster**).
 
 ---
 
@@ -199,13 +199,14 @@ Exact measurements from `benchmarks/results/baseline_raw/summary.csv` and `bench
 
 ## 7. Overall Workload Analysis
 
-### Scope and Context of the 51.5× Improvement
 The total workload time (calculated as the direct sum of the average execution times for all 30 benchmark queries) dropped from **24,777.240 ms** to **480.972 ms**, representing an overall **51.5× speedup (98.06% reduction)** in total batch runtime on this test environment.
 
-> [!IMPORTANT]
-> This 51.5× aggregate speedup is **not a universal database speedup**. The sum of averages was overwhelmingly dominated by a single query: **R19**, which alone accounted for **98.0% of the baseline workload execution time**. Rewriting R19 from correlated subqueries into set-based pre-aggregated joins resolved this dominant systemic bottleneck. 
->
-> When evaluating the remaining 29 queries, performance gains reflect specific, targeted index improvements (e.g. 34× on R05, 9.2× on R24, 5.3× on R23), while analytical queries that require full-table scanning remained largely unchanged. All figures are specific to the 200,000-row seed dataset executed on PostgreSQL 18.6 under local test conditions.
+### Distribution of Workload Improvements
+This 51.5× aggregate speedup is not a uniform across-the-board database speedup. The baseline sum of averages was heavily dominated by a single query: **R19**, which alone accounted for **98.0% of the baseline workload execution time**. Rewriting R19 from nested correlated subqueries into set-based pre-aggregated joins resolved this primary bottleneck.
+
+Across the remaining 29 queries:
+- Targeted indexes provided substantial gains for specific access paths (34.3× on R05, 9.2× on R24, 5.3× on R23, 3.3× on R10).
+- Analytical queries requiring full-table scans (R12, R20, R22) and write transactions (W01–W03) showed expected minor fluctuations on this 200,000-row seed dataset.
 
 ---
 
@@ -232,25 +233,24 @@ Every secondary index added to a relational table introduces overhead on write o
 - **`W01` (Video Upload):** `1.021 ms` → `0.856 ms`. No new indexes were added to `videos`, so upload performance remained fast and unchanged.
 - **`W02` (Watch Event Ingestion):** `1.187 ms` → `1.089 ms`. Two new indexes were added to `watch_events` (`idx_watch_events_user_started` and `idx_watch_events_started_at`). Across the three benchmark runs, `W02` execution time remained around ~1.09 ms, within real-time targets (<5 ms).
 - **`W03` (View Counter Increment):** `0.463 ms` → `0.407 ms`. Single-row indexed update on primary key.
-- **`W04` (Subscriber Count Batch Recomputation):** `54.235 ms` → `47.256 ms`. Improved slightly due to faster index scans on `subscriptions`.
+- **`W04` (Subscriber Count Batch Recomputation):** `54.235 ms` → `47.256 ms`. Full-table aggregation across subscriptions and channel updates remained consistent.
 - **`W05` (Publishing Service Status Update):** `9.678 ms` → `3.862 ms`.
 
-### Limitations of Observed Overhead:
-> [!WARNING]
-> While write performance remained fast across three controlled benchmark runs on the 200,000-row dataset, this observation does **not** prove that index overhead is negligible under production conditions. Under high-concurrency ingestion or at large scale, maintaining multiple secondary indexes on `watch_events` will cause measurable write amplification and WAL traffic. Index creation must remain strictly conservative.
+### Write Overhead Considerations
+While write execution times remained fast across three controlled benchmark runs on the 200,000-row seed dataset, this does not imply that index overhead is negligible in production. Under high-concurrency ingestion or at larger scales, maintaining multiple secondary indexes on `watch_events` will increase write amplification and WAL volume. Limiting modifications to four high-selectivity indexes keeps write degradation contained.
 
 ---
 
 ## 10. Limitations & Scalability Implications
 
-1. **R23 and Offset Pagination Limitations:**
-   - The index `idx_comments_created_at_desc` successfully eliminated the 3.6 MB disk spill and reduced execution time from `28.5 ms` to `5.3 ms`.
-   - **Crucial Limitation:** While the index eliminates sorting, it **does not eliminate OFFSET traversal**. With `OFFSET 30000`, PostgreSQL must still sequentially scan through the first 30,000 leaf index entries before returning the 25 requested tuples. Under projected large-scale conditions where pagination could reach `OFFSET 600000`, performance will degrade significantly unless keyset pagination (`WHERE created_at < :last_seen`) is implemented.
+1. **R23 and Offset Pagination:**
+   - The index `idx_comments_created_at_desc` eliminated the 3.6 MB disk spill and reduced execution time from `28.5 ms` to `5.3 ms`.
+   - **Pagination Boundary:** While the index eliminates sorting, it **does not eliminate OFFSET traversal**. With `OFFSET 30000`, PostgreSQL must still scan through the first 30,000 index leaf entries before returning the 25 requested tuples. At larger scales where offsets could reach `OFFSET 600000`, performance will degrade unless keyset pagination (`WHERE created_at < :last_seen`) is adopted.
 2. **Missing Search Indexing (R04):**
    - Wildcard text search remains unoptimized until a trigram GIN index (`pg_trgm`) is evaluated.
 3. **Projected 20× Dataset Growth (Phase 5 Assumption):**
-   - Project specifications project an upcoming scalability round with a **projected 20× increase in volume** (~4,000,000 watch events).
-   - This 20× growth is an anticipated testing milestone, not a currently measured reality. At that projected scale, analytical reporting over monthly windows (R07, R11, R16) will require architectural adjustments such as table partitioning by date range (`RANGE (started_at)`) to enable partition pruning.
+   - The upcoming Phase 5 scalability evaluation assumes approximately 20× volume growth (~4,000,000 watch events).
+   - This 20× growth is an anticipated testing milestone, not a currently measured reality. At that scale, analytical reporting over monthly windows (R07, R11, R16) will require architectural adjustments such as table partitioning by date range (`RANGE (started_at)`) to enable partition pruning.
 
 ---
 *Report compiled from verified local benchmark data in `benchmarks/results/baseline_raw/` and `benchmarks/results/optimized/`.*

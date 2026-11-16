@@ -1,14 +1,12 @@
 -- Phase 2: YouTube schema, worked out from the seed data
 -- Team T0066
+-- Run on an empty database: psql -d youtube_db -f sql/01_schema.sql
 --
--- Run on an empty database:  psql -d youtube_db -f sql/01_schema.sql
--- Only PK, FK, UNIQUE, NOT NULL, CHECK and DEFAULT here. No extra indexes
-
---
---   * deleting an account or channel wipes its content (videos, comments,
---     likes, playlists, subscriptions)  -> CASCADE
---   * views and ad revenue that already happened are kept, just unlinked
---     -> SET NULL on watch_events, RESTRICT on ad_impressions
+-- Deletion rules:
+--   * Deleting an account or channel removes its associated content (videos,
+--     comments, likes, playlists, subscriptions) via CASCADE.
+--   * Past views and ad revenue are retained but unlinked
+--     (SET NULL on watch_events, RESTRICT on ad_impressions).
 
 DROP SCHEMA IF EXISTS youtube CASCADE;
 CREATE SCHEMA youtube;
@@ -49,7 +47,7 @@ CREATE TABLE channels (
     CONSTRAINT uq_channels_handle UNIQUE (handle),
     CONSTRAINT uq_channels_owner  UNIQUE (owner_user_id),
     CONSTRAINT fk_channels_owner FOREIGN KEY (owner_user_id)
-        REFERENCES users (user_id) ON DELETE CASCADE,       -- account deleted -> channel deleted
+        REFERENCES users (user_id) ON DELETE CASCADE,
     CONSTRAINT chk_channels_handle_format CHECK (handle ~ '^@[a-z0-9._]+$'),
     CONSTRAINT chk_channels_country_code  CHECK (country_code ~ '^[A-Z]{2}$'),
     CONSTRAINT chk_channels_monetization  CHECK (monetization_status IN ('ELIGIBLE', 'NOT_ELIGIBLE', 'SUSPENDED')),
@@ -74,7 +72,7 @@ CREATE TABLE videos (
 
     CONSTRAINT pk_videos PRIMARY KEY (video_id),
     CONSTRAINT fk_videos_channel FOREIGN KEY (channel_id)
-        REFERENCES channels (channel_id) ON DELETE CASCADE, -- channel deleted -> its videos go too
+        REFERENCES channels (channel_id) ON DELETE CASCADE,
     CONSTRAINT chk_videos_id_format   CHECK (video_id ~ '^[A-Za-z0-9_-]{11}$'),
     CONSTRAINT chk_videos_title_not_blank CHECK (btrim(title) <> ''),
     CONSTRAINT chk_videos_category    CHECK (category IN ('Comedy', 'Cooking', 'Education', 'Film', 'Gaming',

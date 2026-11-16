@@ -1,0 +1,144 @@
+=== R17 run 1 ===
+Sort  (cost=5897.47..5897.56 rows=33 width=55) (actual time=23.320..24.633 rows=31.00 loops=1)
+  Sort Key: (round(((sum(w.watch_seconds))::numeric / 3600.0), 1)) DESC
+  Sort Method: quicksort  Memory: 26kB
+  Buffers: shared hit=3451
+  ->  Finalize GroupAggregate  (cost=5874.42..5896.64 rows=33 width=55) (actual time=23.196..24.614 rows=31.00 loops=1)
+        Group Key: c.handle
+        Filter: (((sum(w.watch_seconds))::numeric / 3600.0) >= '40'::numeric)
+        Rows Removed by Filter: 80
+        Buffers: shared hit=3448
+        ->  Gather Merge  (cost=5874.42..5893.80 rows=170 width=31) (actual time=23.178..24.529 rows=222.00 loops=1)
+              Workers Planned: 1
+              Workers Launched: 1
+              Buffers: shared hit=3448
+              ->  Sort  (cost=4874.41..4874.66 rows=100 width=31) (actual time=21.055..21.060 rows=111.00 loops=2)
+                    Sort Key: c.handle
+                    Sort Method: quicksort  Memory: 30kB
+                    Buffers: shared hit=3448
+                    Worker 0:  Sort Method: quicksort  Memory: 30kB
+                    ->  Partial HashAggregate  (cost=4870.09..4871.09 rows=100 width=31) (actual time=20.973..20.984 rows=111.00 loops=2)
+                          Group Key: c.handle
+                          Batches: 1  Memory Usage: 32kB
+                          Buffers: shared hit=3440
+                          Worker 0:  Batches: 1  Memory Usage: 32kB
+                          ->  Hash Join  (cost=1121.61..4850.48 rows=3922 width=27) (actual time=4.673..19.207 rows=11621.50 loops=2)
+                                Hash Cond: ((w.video_id)::text = (v.video_id)::text)
+                                Buffers: shared hit=3440
+                                ->  Parallel Seq Scan on watch_events w  (cost=0.00..3248.47 rows=117647 width=16) (actual time=0.008..5.097 rows=100000.00 loops=2)
+                                      Buffers: shared hit=2072
+                                ->  Hash  (cost=1109.11..1109.11 rows=1000 width=35) (actual time=4.658..4.659 rows=3426.00 loops=2)
+                                      Buckets: 4096 (originally 1024)  Batches: 1 (originally 1)  Memory Usage: 258kB
+                                      Buffers: shared hit=1368
+                                      ->  Hash Join  (cost=82.25..1109.11 rows=1000 width=35) (actual time=0.293..4.176 rows=3426.00 loops=2)
+                                            Hash Cond: (v.channel_id = c.channel_id)
+                                            Buffers: shared hit=1368
+                                            ->  Seq Scan on videos v  (cost=0.00..948.00 rows=30000 width=16) (actual time=0.028..1.708 rows=30000.00 loops=2)
+                                                  Buffers: shared hit=1296
+                                            ->  Hash  (cost=81.00..81.00 rows=100 width=23) (actual time=0.256..0.256 rows=111.00 loops=2)
+                                                  Buckets: 1024  Batches: 1  Memory Usage: 15kB
+                                                  Buffers: shared hit=72
+                                                  ->  Seq Scan on channels c  (cost=0.00..81.00 rows=100 width=23) (actual time=0.024..0.241 rows=111.00 loops=2)
+                                                        Filter: ((subscriber_count >= 100) AND ((monetization_status)::text = 'NOT_ELIGIBLE'::text))
+                                                        Rows Removed by Filter: 2889
+                                                        Buffers: shared hit=72
+Planning:
+  Buffers: shared hit=322
+Planning Time: 1.131 ms
+Execution Time: 24.710 ms
+=== R17 run 2 ===
+Sort  (cost=5897.47..5897.56 rows=33 width=55) (actual time=23.306..24.604 rows=31.00 loops=1)
+  Sort Key: (round(((sum(w.watch_seconds))::numeric / 3600.0), 1)) DESC
+  Sort Method: quicksort  Memory: 26kB
+  Buffers: shared hit=3451
+  ->  Finalize GroupAggregate  (cost=5874.42..5896.64 rows=33 width=55) (actual time=23.195..24.586 rows=31.00 loops=1)
+        Group Key: c.handle
+        Filter: (((sum(w.watch_seconds))::numeric / 3600.0) >= '40'::numeric)
+        Rows Removed by Filter: 80
+        Buffers: shared hit=3448
+        ->  Gather Merge  (cost=5874.42..5893.80 rows=170 width=31) (actual time=23.177..24.509 rows=222.00 loops=1)
+              Workers Planned: 1
+              Workers Launched: 1
+              Buffers: shared hit=3448
+              ->  Sort  (cost=4874.41..4874.66 rows=100 width=31) (actual time=21.082..21.087 rows=111.00 loops=2)
+                    Sort Key: c.handle
+                    Sort Method: quicksort  Memory: 30kB
+                    Buffers: shared hit=3448
+                    Worker 0:  Sort Method: quicksort  Memory: 30kB
+                    ->  Partial HashAggregate  (cost=4870.09..4871.09 rows=100 width=31) (actual time=21.002..21.013 rows=111.00 loops=2)
+                          Group Key: c.handle
+                          Batches: 1  Memory Usage: 32kB
+                          Buffers: shared hit=3440
+                          Worker 0:  Batches: 1  Memory Usage: 32kB
+                          ->  Hash Join  (cost=1121.61..4850.48 rows=3922 width=27) (actual time=4.773..19.257 rows=11621.50 loops=2)
+                                Hash Cond: ((w.video_id)::text = (v.video_id)::text)
+                                Buffers: shared hit=3440
+                                ->  Parallel Seq Scan on watch_events w  (cost=0.00..3248.47 rows=117647 width=16) (actual time=0.007..5.076 rows=100000.00 loops=2)
+                                      Buffers: shared hit=2072
+                                ->  Hash  (cost=1109.11..1109.11 rows=1000 width=35) (actual time=4.759..4.760 rows=3426.00 loops=2)
+                                      Buckets: 4096 (originally 1024)  Batches: 1 (originally 1)  Memory Usage: 258kB
+                                      Buffers: shared hit=1368
+                                      ->  Hash Join  (cost=82.25..1109.11 rows=1000 width=35) (actual time=0.284..4.242 rows=3426.00 loops=2)
+                                            Hash Cond: (v.channel_id = c.channel_id)
+                                            Buffers: shared hit=1368
+                                            ->  Seq Scan on videos v  (cost=0.00..948.00 rows=30000 width=16) (actual time=0.024..1.712 rows=30000.00 loops=2)
+                                                  Buffers: shared hit=1296
+                                            ->  Hash  (cost=81.00..81.00 rows=100 width=23) (actual time=0.250..0.251 rows=111.00 loops=2)
+                                                  Buckets: 1024  Batches: 1  Memory Usage: 15kB
+                                                  Buffers: shared hit=72
+                                                  ->  Seq Scan on channels c  (cost=0.00..81.00 rows=100 width=23) (actual time=0.023..0.235 rows=111.00 loops=2)
+                                                        Filter: ((subscriber_count >= 100) AND ((monetization_status)::text = 'NOT_ELIGIBLE'::text))
+                                                        Rows Removed by Filter: 2889
+                                                        Buffers: shared hit=72
+Planning:
+  Buffers: shared hit=322
+Planning Time: 0.957 ms
+Execution Time: 24.677 ms
+=== R17 run 3 ===
+Sort  (cost=5897.47..5897.56 rows=33 width=55) (actual time=23.471..24.867 rows=31.00 loops=1)
+  Sort Key: (round(((sum(w.watch_seconds))::numeric / 3600.0), 1)) DESC
+  Sort Method: quicksort  Memory: 26kB
+  Buffers: shared hit=3451
+  ->  Finalize GroupAggregate  (cost=5874.42..5896.64 rows=33 width=55) (actual time=23.356..24.849 rows=31.00 loops=1)
+        Group Key: c.handle
+        Filter: (((sum(w.watch_seconds))::numeric / 3600.0) >= '40'::numeric)
+        Rows Removed by Filter: 80
+        Buffers: shared hit=3448
+        ->  Gather Merge  (cost=5874.42..5893.80 rows=170 width=31) (actual time=23.328..24.758 rows=222.00 loops=1)
+              Workers Planned: 1
+              Workers Launched: 1
+              Buffers: shared hit=3448
+              ->  Sort  (cost=4874.41..4874.66 rows=100 width=31) (actual time=21.457..21.464 rows=111.00 loops=2)
+                    Sort Key: c.handle
+                    Sort Method: quicksort  Memory: 30kB
+                    Buffers: shared hit=3448
+                    Worker 0:  Sort Method: quicksort  Memory: 30kB
+                    ->  Partial HashAggregate  (cost=4870.09..4871.09 rows=100 width=31) (actual time=21.362..21.373 rows=111.00 loops=2)
+                          Group Key: c.handle
+                          Batches: 1  Memory Usage: 32kB
+                          Buffers: shared hit=3440
+                          Worker 0:  Batches: 1  Memory Usage: 32kB
+                          ->  Hash Join  (cost=1121.61..4850.48 rows=3922 width=27) (actual time=4.774..19.597 rows=11621.50 loops=2)
+                                Hash Cond: ((w.video_id)::text = (v.video_id)::text)
+                                Buffers: shared hit=3440
+                                ->  Parallel Seq Scan on watch_events w  (cost=0.00..3248.47 rows=117647 width=16) (actual time=0.008..5.136 rows=100000.00 loops=2)
+                                      Buffers: shared hit=2072
+                                ->  Hash  (cost=1109.11..1109.11 rows=1000 width=35) (actual time=4.759..4.761 rows=3426.00 loops=2)
+                                      Buckets: 4096 (originally 1024)  Batches: 1 (originally 1)  Memory Usage: 258kB
+                                      Buffers: shared hit=1368
+                                      ->  Hash Join  (cost=82.25..1109.11 rows=1000 width=35) (actual time=0.274..4.270 rows=3426.00 loops=2)
+                                            Hash Cond: (v.channel_id = c.channel_id)
+                                            Buffers: shared hit=1368
+                                            ->  Seq Scan on videos v  (cost=0.00..948.00 rows=30000 width=16) (actual time=0.021..1.689 rows=30000.00 loops=2)
+                                                  Buffers: shared hit=1296
+                                            ->  Hash  (cost=81.00..81.00 rows=100 width=23) (actual time=0.244..0.244 rows=111.00 loops=2)
+                                                  Buckets: 1024  Batches: 1  Memory Usage: 15kB
+                                                  Buffers: shared hit=72
+                                                  ->  Seq Scan on channels c  (cost=0.00..81.00 rows=100 width=23) (actual time=0.021..0.228 rows=111.00 loops=2)
+                                                        Filter: ((subscriber_count >= 100) AND ((monetization_status)::text = 'NOT_ELIGIBLE'::text))
+                                                        Rows Removed by Filter: 2889
+                                                        Buffers: shared hit=72
+Planning:
+  Buffers: shared hit=322
+Planning Time: 1.094 ms
+Execution Time: 24.939 ms

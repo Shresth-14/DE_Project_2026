@@ -1,0 +1,72 @@
+=== R13 run 1 ===
+Index Scan using pk_subscriptions on subscriptions s  (cost=5620.63..8074.44 rows=17 width=12) (actual time=25.912..25.914 rows=0.00 loops=1)
+  Index Cond: (channel_id = 217)
+  Filter: (NOT (ANY (user_id = (hashed SubPlan 1).col1)))
+  Rows Removed by Filter: 88
+  Index Searches: 1
+  Buffers: shared hit=3169
+  SubPlan 1
+    ->  Hash Join  (cost=1023.11..5620.19 rows=60 width=4) (actual time=3.416..22.953 rows=97.00 loops=1)
+          Hash Cond: ((w.video_id)::text = (v.video_id)::text)
+          Buffers: shared hit=2720
+          ->  Seq Scan on watch_events w  (cost=0.00..4072.00 rows=200000 width=16) (actual time=0.010..9.315 rows=200000.00 loops=1)
+                Buffers: shared hit=2072
+          ->  Hash  (cost=1023.00..1023.00 rows=9 width=12) (actual time=2.516..2.517 rows=15.00 loops=1)
+                Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                Buffers: shared hit=648
+                ->  Seq Scan on videos v  (cost=0.00..1023.00 rows=9 width=12) (actual time=0.137..2.509 rows=15.00 loops=1)
+                      Filter: (channel_id = 217)
+                      Rows Removed by Filter: 29985
+                      Buffers: shared hit=648
+Planning:
+  Buffers: shared hit=263
+Planning Time: 0.971 ms
+Execution Time: 25.973 ms
+=== R13 run 2 ===
+Index Scan using pk_subscriptions on subscriptions s  (cost=5620.63..8074.44 rows=17 width=12) (actual time=26.485..26.487 rows=0.00 loops=1)
+  Index Cond: (channel_id = 217)
+  Filter: (NOT (ANY (user_id = (hashed SubPlan 1).col1)))
+  Rows Removed by Filter: 88
+  Index Searches: 1
+  Buffers: shared hit=3169
+  SubPlan 1
+    ->  Hash Join  (cost=1023.11..5620.19 rows=60 width=4) (actual time=3.707..23.976 rows=97.00 loops=1)
+          Hash Cond: ((w.video_id)::text = (v.video_id)::text)
+          Buffers: shared hit=2720
+          ->  Seq Scan on watch_events w  (cost=0.00..4072.00 rows=200000 width=16) (actual time=0.010..9.517 rows=200000.00 loops=1)
+                Buffers: shared hit=2072
+          ->  Hash  (cost=1023.00..1023.00 rows=9 width=12) (actual time=2.801..2.802 rows=15.00 loops=1)
+                Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                Buffers: shared hit=648
+                ->  Seq Scan on videos v  (cost=0.00..1023.00 rows=9 width=12) (actual time=0.147..2.790 rows=15.00 loops=1)
+                      Filter: (channel_id = 217)
+                      Rows Removed by Filter: 29985
+                      Buffers: shared hit=648
+Planning:
+  Buffers: shared hit=263
+Planning Time: 0.855 ms
+Execution Time: 26.546 ms
+=== R13 run 3 ===
+Index Scan using pk_subscriptions on subscriptions s  (cost=5620.63..8074.44 rows=17 width=12) (actual time=25.725..25.727 rows=0.00 loops=1)
+  Index Cond: (channel_id = 217)
+  Filter: (NOT (ANY (user_id = (hashed SubPlan 1).col1)))
+  Rows Removed by Filter: 88
+  Index Searches: 1
+  Buffers: shared hit=3169
+  SubPlan 1
+    ->  Hash Join  (cost=1023.11..5620.19 rows=60 width=4) (actual time=3.715..23.223 rows=97.00 loops=1)
+          Hash Cond: ((w.video_id)::text = (v.video_id)::text)
+          Buffers: shared hit=2720
+          ->  Seq Scan on watch_events w  (cost=0.00..4072.00 rows=200000 width=16) (actual time=0.010..9.360 rows=200000.00 loops=1)
+                Buffers: shared hit=2072
+          ->  Hash  (cost=1023.00..1023.00 rows=9 width=12) (actual time=2.816..2.816 rows=15.00 loops=1)
+                Buckets: 1024  Batches: 1  Memory Usage: 9kB
+                Buffers: shared hit=648
+                ->  Seq Scan on videos v  (cost=0.00..1023.00 rows=9 width=12) (actual time=0.145..2.807 rows=15.00 loops=1)
+                      Filter: (channel_id = 217)
+                      Rows Removed by Filter: 29985
+                      Buffers: shared hit=648
+Planning:
+  Buffers: shared hit=263
+Planning Time: 0.834 ms
+Execution Time: 25.785 ms

@@ -1,0 +1,84 @@
+=== R12 run 1 ===
+Sort  (cost=5131.89..5131.90 rows=4 width=45) (actual time=21.050..22.464 rows=4.00 loops=1)
+  Sort Key: (count(*)) DESC
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=2083
+  ->  Finalize GroupAggregate  (cost=5130.91..5131.85 rows=4 width=45) (actual time=21.035..22.452 rows=4.00 loops=1)
+        Group Key: device
+        Buffers: shared hit=2080
+        ->  Gather Merge  (cost=5130.91..5131.71 rows=7 width=21) (actual time=21.016..22.432 rows=8.00 loops=1)
+              Workers Planned: 1
+              Workers Launched: 1
+              Buffers: shared hit=2080
+              ->  Sort  (cost=4130.90..4130.91 rows=4 width=21) (actual time=19.233..19.234 rows=4.00 loops=2)
+                    Sort Key: device
+                    Sort Method: quicksort  Memory: 25kB
+                    Buffers: shared hit=2080
+                    Worker 0:  Sort Method: quicksort  Memory: 25kB
+                    ->  Partial HashAggregate  (cost=4130.82..4130.86 rows=4 width=21) (actual time=19.202..19.203 rows=4.00 loops=2)
+                          Group Key: device
+                          Batches: 1  Memory Usage: 32kB
+                          Buffers: shared hit=2072
+                          Worker 0:  Batches: 1  Memory Usage: 32kB
+                          ->  Parallel Seq Scan on watch_events  (cost=0.00..3248.47 rows=117647 width=9) (actual time=0.008..5.138 rows=100000.00 loops=2)
+                                Buffers: shared hit=2072
+Planning:
+  Buffers: shared hit=151
+Planning Time: 0.465 ms
+Execution Time: 22.548 ms
+=== R12 run 2 ===
+Sort  (cost=5131.89..5131.90 rows=4 width=45) (actual time=22.950..24.458 rows=4.00 loops=1)
+  Sort Key: (count(*)) DESC
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=2083
+  ->  Finalize GroupAggregate  (cost=5130.91..5131.85 rows=4 width=45) (actual time=22.935..24.445 rows=4.00 loops=1)
+        Group Key: device
+        Buffers: shared hit=2080
+        ->  Gather Merge  (cost=5130.91..5131.71 rows=7 width=21) (actual time=22.917..24.427 rows=8.00 loops=1)
+              Workers Planned: 1
+              Workers Launched: 1
+              Buffers: shared hit=2080
+              ->  Sort  (cost=4130.90..4130.91 rows=4 width=21) (actual time=20.933..20.933 rows=4.00 loops=2)
+                    Sort Key: device
+                    Sort Method: quicksort  Memory: 25kB
+                    Buffers: shared hit=2080
+                    Worker 0:  Sort Method: quicksort  Memory: 25kB
+                    ->  Partial HashAggregate  (cost=4130.82..4130.86 rows=4 width=21) (actual time=20.899..20.900 rows=4.00 loops=2)
+                          Group Key: device
+                          Batches: 1  Memory Usage: 32kB
+                          Buffers: shared hit=2072
+                          Worker 0:  Batches: 1  Memory Usage: 32kB
+                          ->  Parallel Seq Scan on watch_events  (cost=0.00..3248.47 rows=117647 width=9) (actual time=0.008..5.492 rows=100000.00 loops=2)
+                                Buffers: shared hit=2072
+Planning:
+  Buffers: shared hit=151
+Planning Time: 0.520 ms
+Execution Time: 24.553 ms
+=== R12 run 3 ===
+Sort  (cost=5131.89..5131.90 rows=4 width=45) (actual time=22.327..23.787 rows=4.00 loops=1)
+  Sort Key: (count(*)) DESC
+  Sort Method: quicksort  Memory: 25kB
+  Buffers: shared hit=2083
+  ->  Finalize GroupAggregate  (cost=5130.91..5131.85 rows=4 width=45) (actual time=22.314..23.776 rows=4.00 loops=1)
+        Group Key: device
+        Buffers: shared hit=2080
+        ->  Gather Merge  (cost=5130.91..5131.71 rows=7 width=21) (actual time=22.294..23.757 rows=8.00 loops=1)
+              Workers Planned: 1
+              Workers Launched: 1
+              Buffers: shared hit=2080
+              ->  Sort  (cost=4130.90..4130.91 rows=4 width=21) (actual time=20.069..20.070 rows=4.00 loops=2)
+                    Sort Key: device
+                    Sort Method: quicksort  Memory: 25kB
+                    Buffers: shared hit=2080
+                    Worker 0:  Sort Method: quicksort  Memory: 25kB
+                    ->  Partial HashAggregate  (cost=4130.82..4130.86 rows=4 width=21) (actual time=20.036..20.037 rows=4.00 loops=2)
+                          Group Key: device
+                          Batches: 1  Memory Usage: 32kB
+                          Buffers: shared hit=2072
+                          Worker 0:  Batches: 1  Memory Usage: 32kB
+                          ->  Parallel Seq Scan on watch_events  (cost=0.00..3248.47 rows=117647 width=9) (actual time=0.013..5.422 rows=100000.00 loops=2)
+                                Buffers: shared hit=2072
+Planning:
+  Buffers: shared hit=151
+Planning Time: 0.469 ms
+Execution Time: 23.866 ms

@@ -1,0 +1,33 @@
+=== W05 run 1 ===
+Update on videos  (cost=0.00..1098.00 rows=0 width=0) (actual time=4.042..4.043 rows=0.00 loops=1)
+  Buffers: shared hit=754 dirtied=17
+  ->  Seq Scan on videos  (cost=0.00..1098.00 rows=56 width=42) (actual time=0.275..3.574 rows=7.00 loops=1)
+        Filter: ((published_at <= '2026-07-03 00:00:00+05:30'::timestamp with time zone) AND ((visibility)::text = 'SCHEDULED'::text))
+        Rows Removed by Filter: 29993
+        Buffers: shared hit=648
+Planning:
+  Buffers: shared hit=71
+Planning Time: 0.314 ms
+Execution Time: 4.122 ms
+=== W05 run 2 ===
+Update on videos  (cost=0.00..1098.00 rows=0 width=0) (actual time=20.943..20.944 rows=0.00 loops=1)
+  Buffers: shared hit=751 dirtied=1
+  ->  Seq Scan on videos  (cost=0.00..1098.00 rows=56 width=42) (actual time=6.399..20.282 rows=7.00 loops=1)
+        Filter: ((published_at <= '2026-07-03 00:00:00+05:30'::timestamp with time zone) AND ((visibility)::text = 'SCHEDULED'::text))
+        Rows Removed by Filter: 29993
+        Buffers: shared hit=648
+Planning:
+  Buffers: shared hit=71
+Planning Time: 0.455 ms
+Execution Time: 21.060 ms
+=== W05 run 3 ===
+Update on videos  (cost=0.00..1098.00 rows=0 width=0) (actual time=3.775..3.776 rows=0.00 loops=1)
+  Buffers: shared hit=751 dirtied=1
+  ->  Seq Scan on videos  (cost=0.00..1098.00 rows=56 width=42) (actual time=0.269..3.434 rows=7.00 loops=1)
+        Filter: ((published_at <= '2026-07-03 00:00:00+05:30'::timestamp with time zone) AND ((visibility)::text = 'SCHEDULED'::text))
+        Rows Removed by Filter: 29993
+        Buffers: shared hit=648
+Planning:
+  Buffers: shared hit=71
+Planning Time: 0.279 ms
+Execution Time: 3.851 ms

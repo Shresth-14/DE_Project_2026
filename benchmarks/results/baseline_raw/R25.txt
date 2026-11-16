@@ -1,0 +1,87 @@
+=== R25 run 1 ===
+Sort  (cost=9912.31..9959.82 rows=19005 width=29) (actual time=63.351..63.360 rows=181.00 loops=1)
+  Sort Key: a.shown_at DESC
+  Sort Method: quicksort  Memory: 33kB
+  Buffers: shared hit=2887
+  ->  Hash Join  (cost=2769.81..8561.62 rows=19005 width=29) (actual time=16.712..63.287 rows=181.00 loops=1)
+        Hash Cond: (w.user_id = u.user_id)
+        Join Filter: (u.premium_until >= (a.shown_at)::date)
+        Rows Removed by Join Filter: 41983
+        Buffers: shared hit=2884
+        ->  Hash Join  (cost=1758.81..7400.95 rows=57014 width=25) (actual time=11.247..47.708 rows=57014.00 loops=1)
+              Hash Cond: (w.watch_id = a.watch_id)
+              Buffers: shared hit=2548
+              ->  Seq Scan on watch_events w  (cost=0.00..4072.00 rows=200000 width=12) (actual time=0.011..10.430 rows=200000.00 loops=1)
+                    Buffers: shared hit=2072
+              ->  Hash  (cost=1046.14..1046.14 rows=57014 width=29) (actual time=11.172..11.173 rows=57014.00 loops=1)
+                    Buckets: 65536  Batches: 1  Memory Usage: 4076kB
+                    Buffers: shared hit=476
+                    ->  Seq Scan on ad_impressions a  (cost=0.00..1046.14 rows=57014 width=29) (actual time=0.008..4.762 rows=57014.00 loops=1)
+                          Buffers: shared hit=476
+        ->  Hash  (cost=636.00..636.00 rows=30000 width=8) (actual time=5.243..5.243 rows=30000.00 loops=1)
+              Buckets: 32768  Batches: 1  Memory Usage: 1321kB
+              Buffers: shared hit=336
+              ->  Seq Scan on users u  (cost=0.00..636.00 rows=30000 width=8) (actual time=0.005..2.778 rows=30000.00 loops=1)
+                    Buffers: shared hit=336
+Planning:
+  Buffers: shared hit=430
+Planning Time: 1.351 ms
+Execution Time: 63.454 ms
+=== R25 run 2 ===
+Sort  (cost=9912.31..9959.82 rows=19005 width=29) (actual time=63.116..63.124 rows=181.00 loops=1)
+  Sort Key: a.shown_at DESC
+  Sort Method: quicksort  Memory: 33kB
+  Buffers: shared hit=2887
+  ->  Hash Join  (cost=2769.81..8561.62 rows=19005 width=29) (actual time=15.756..63.062 rows=181.00 loops=1)
+        Hash Cond: (w.user_id = u.user_id)
+        Join Filter: (u.premium_until >= (a.shown_at)::date)
+        Rows Removed by Join Filter: 41983
+        Buffers: shared hit=2884
+        ->  Hash Join  (cost=1758.81..7400.95 rows=57014 width=25) (actual time=10.716..47.792 rows=57014.00 loops=1)
+              Hash Cond: (w.watch_id = a.watch_id)
+              Buffers: shared hit=2548
+              ->  Seq Scan on watch_events w  (cost=0.00..4072.00 rows=200000 width=12) (actual time=0.004..10.290 rows=200000.00 loops=1)
+                    Buffers: shared hit=2072
+              ->  Hash  (cost=1046.14..1046.14 rows=57014 width=29) (actual time=10.662..10.662 rows=57014.00 loops=1)
+                    Buckets: 65536  Batches: 1  Memory Usage: 4076kB
+                    Buffers: shared hit=476
+                    ->  Seq Scan on ad_impressions a  (cost=0.00..1046.14 rows=57014 width=29) (actual time=0.006..4.650 rows=57014.00 loops=1)
+                          Buffers: shared hit=476
+        ->  Hash  (cost=636.00..636.00 rows=30000 width=8) (actual time=4.926..4.926 rows=30000.00 loops=1)
+              Buckets: 32768  Batches: 1  Memory Usage: 1321kB
+              Buffers: shared hit=336
+              ->  Seq Scan on users u  (cost=0.00..636.00 rows=30000 width=8) (actual time=0.003..2.687 rows=30000.00 loops=1)
+                    Buffers: shared hit=336
+Planning:
+  Buffers: shared hit=430
+Planning Time: 1.084 ms
+Execution Time: 63.207 ms
+=== R25 run 3 ===
+Sort  (cost=9912.31..9959.82 rows=19005 width=29) (actual time=83.494..83.506 rows=181.00 loops=1)
+  Sort Key: a.shown_at DESC
+  Sort Method: quicksort  Memory: 33kB
+  Buffers: shared hit=2887
+  ->  Hash Join  (cost=2769.81..8561.62 rows=19005 width=29) (actual time=16.391..83.421 rows=181.00 loops=1)
+        Hash Cond: (w.user_id = u.user_id)
+        Join Filter: (u.premium_until >= (a.shown_at)::date)
+        Rows Removed by Join Filter: 41983
+        Buffers: shared hit=2884
+        ->  Hash Join  (cost=1758.81..7400.95 rows=57014 width=25) (actual time=11.138..62.457 rows=57014.00 loops=1)
+              Hash Cond: (w.watch_id = a.watch_id)
+              Buffers: shared hit=2548
+              ->  Seq Scan on watch_events w  (cost=0.00..4072.00 rows=200000 width=12) (actual time=0.005..11.088 rows=200000.00 loops=1)
+                    Buffers: shared hit=2072
+              ->  Hash  (cost=1046.14..1046.14 rows=57014 width=29) (actual time=11.069..11.070 rows=57014.00 loops=1)
+                    Buckets: 65536  Batches: 1  Memory Usage: 4076kB
+                    Buffers: shared hit=476
+                    ->  Seq Scan on ad_impressions a  (cost=0.00..1046.14 rows=57014 width=29) (actual time=0.006..4.954 rows=57014.00 loops=1)
+                          Buffers: shared hit=476
+        ->  Hash  (cost=636.00..636.00 rows=30000 width=8) (actual time=5.090..5.093 rows=30000.00 loops=1)
+              Buckets: 32768  Batches: 1  Memory Usage: 1321kB
+              Buffers: shared hit=336
+              ->  Seq Scan on users u  (cost=0.00..636.00 rows=30000 width=8) (actual time=0.004..2.812 rows=30000.00 loops=1)
+                    Buffers: shared hit=336
+Planning:
+  Buffers: shared hit=430
+Planning Time: 0.928 ms
+Execution Time: 83.604 ms

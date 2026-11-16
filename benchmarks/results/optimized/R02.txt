@@ -1,0 +1,45 @@
+=== R02 run 1 ===
+Nested Loop  (cost=0.57..16.61 rows=1 width=146) (actual time=0.036..0.038 rows=1.00 loops=1)
+  Buffers: shared hit=8
+  ->  Index Scan using pk_videos on videos v  (cost=0.29..8.30 rows=1 width=119) (actual time=0.019..0.021 rows=1.00 loops=1)
+        Index Cond: ((video_id)::text = 'ZkNSlUB1EOs'::text)
+        Index Searches: 1
+        Buffers: shared hit=5
+  ->  Index Scan using pk_channels on channels c  (cost=0.28..8.30 rows=1 width=35) (actual time=0.013..0.013 rows=1.00 loops=1)
+        Index Cond: (channel_id = v.channel_id)
+        Index Searches: 1
+        Buffers: shared hit=3
+Planning:
+  Buffers: shared hit=253
+Planning Time: 0.859 ms
+Execution Time: 0.079 ms
+=== R02 run 2 ===
+Nested Loop  (cost=0.57..16.61 rows=1 width=146) (actual time=0.024..0.024 rows=1.00 loops=1)
+  Buffers: shared hit=6
+  ->  Index Scan using pk_videos on videos v  (cost=0.29..8.30 rows=1 width=119) (actual time=0.016..0.016 rows=1.00 loops=1)
+        Index Cond: ((video_id)::text = 'ZkNSlUB1EOs'::text)
+        Index Searches: 1
+        Buffers: shared hit=3
+  ->  Index Scan using pk_channels on channels c  (cost=0.28..8.30 rows=1 width=35) (actual time=0.005..0.005 rows=1.00 loops=1)
+        Index Cond: (channel_id = v.channel_id)
+        Index Searches: 1
+        Buffers: shared hit=3
+Planning:
+  Buffers: shared hit=253
+Planning Time: 0.705 ms
+Execution Time: 0.061 ms
+=== R02 run 3 ===
+Nested Loop  (cost=0.57..16.61 rows=1 width=146) (actual time=0.023..0.024 rows=1.00 loops=1)
+  Buffers: shared hit=6
+  ->  Index Scan using pk_videos on videos v  (cost=0.29..8.30 rows=1 width=119) (actual time=0.016..0.016 rows=1.00 loops=1)
+        Index Cond: ((video_id)::text = 'ZkNSlUB1EOs'::text)
+        Index Searches: 1
+        Buffers: shared hit=3
+  ->  Index Scan using pk_channels on channels c  (cost=0.28..8.30 rows=1 width=35) (actual time=0.005..0.005 rows=1.00 loops=1)
+        Index Cond: (channel_id = v.channel_id)
+        Index Searches: 1
+        Buffers: shared hit=3
+Planning:
+  Buffers: shared hit=253
+Planning Time: 0.803 ms
+Execution Time: 0.064 ms

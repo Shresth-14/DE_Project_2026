@@ -1,0 +1,48 @@
+=== R24 run 1 ===
+GroupAggregate  (cost=2454.93..2455.59 rows=33 width=16) (actual time=2.956..2.969 rows=37.00 loops=1)
+  Group Key: (date_trunc('month'::text, subscribed_at))
+  Buffers: shared hit=449
+  ->  Sort  (cost=2454.93..2455.02 rows=33 width=8) (actual time=2.948..2.951 rows=88.00 loops=1)
+        Sort Key: (date_trunc('month'::text, subscribed_at))
+        Sort Method: quicksort  Memory: 25kB
+        Buffers: shared hit=449
+        ->  Index Scan using pk_subscriptions on subscriptions  (cost=0.29..2454.10 rows=33 width=8) (actual time=0.098..2.917 rows=88.00 loops=1)
+              Index Cond: (channel_id = 217)
+              Index Searches: 1
+              Buffers: shared hit=446
+Planning:
+  Buffers: shared hit=97
+Planning Time: 0.362 ms
+Execution Time: 3.025 ms
+=== R24 run 2 ===
+GroupAggregate  (cost=2454.93..2455.59 rows=33 width=16) (actual time=2.498..2.511 rows=37.00 loops=1)
+  Group Key: (date_trunc('month'::text, subscribed_at))
+  Buffers: shared hit=449
+  ->  Sort  (cost=2454.93..2455.02 rows=33 width=8) (actual time=2.491..2.495 rows=88.00 loops=1)
+        Sort Key: (date_trunc('month'::text, subscribed_at))
+        Sort Method: quicksort  Memory: 25kB
+        Buffers: shared hit=449
+        ->  Index Scan using pk_subscriptions on subscriptions  (cost=0.29..2454.10 rows=33 width=8) (actual time=0.047..2.466 rows=88.00 loops=1)
+              Index Cond: (channel_id = 217)
+              Index Searches: 1
+              Buffers: shared hit=446
+Planning:
+  Buffers: shared hit=97
+Planning Time: 0.327 ms
+Execution Time: 2.570 ms
+=== R24 run 3 ===
+GroupAggregate  (cost=2454.93..2455.59 rows=33 width=16) (actual time=2.897..2.910 rows=37.00 loops=1)
+  Group Key: (date_trunc('month'::text, subscribed_at))
+  Buffers: shared hit=449
+  ->  Sort  (cost=2454.93..2455.02 rows=33 width=8) (actual time=2.889..2.893 rows=88.00 loops=1)
+        Sort Key: (date_trunc('month'::text, subscribed_at))
+        Sort Method: quicksort  Memory: 25kB
+        Buffers: shared hit=449
+        ->  Index Scan using pk_subscriptions on subscriptions  (cost=0.29..2454.10 rows=33 width=8) (actual time=0.049..2.860 rows=88.00 loops=1)
+              Index Cond: (channel_id = 217)
+              Index Searches: 1
+              Buffers: shared hit=446
+Planning:
+  Buffers: shared hit=97
+Planning Time: 0.333 ms
+Execution Time: 2.966 ms

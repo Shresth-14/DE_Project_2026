@@ -1,0 +1,84 @@
+=== R14 run 1 ===
+Sort  (cost=2387.42..2387.45 rows=9 width=84) (actual time=16.416..16.418 rows=15.00 loops=1)
+  Sort Key: (count(*) FILTER (WHERE ((r.reaction)::text = 'LIKE'::text))) DESC
+  Sort Method: quicksort  Memory: 26kB
+  Buffers: shared hit=1166
+  ->  GroupAggregate  (cost=2386.71..2387.28 rows=9 width=84) (actual time=16.389..16.406 rows=15.00 loops=1)
+        Group Key: v.video_id
+        Buffers: shared hit=1163
+        ->  Sort  (cost=2386.71..2386.76 rows=20 width=94) (actual time=16.376..16.378 rows=32.00 loops=1)
+              Sort Key: v.video_id
+              Sort Method: quicksort  Memory: 28kB
+              Buffers: shared hit=1163
+              ->  Hash Right Join  (cost=1023.11..2386.27 rows=20 width=94) (actual time=2.893..16.324 rows=32.00 loops=1)
+                    Hash Cond: ((r.video_id)::text = (v.video_id)::text)
+                    Buffers: shared hit=1160
+                    ->  Seq Scan on video_reactions r  (cost=0.00..1186.17 rows=67417 width=70) (actual time=0.014..10.454 rows=67417.00 loops=1)
+                          Buffers: shared hit=512
+                    ->  Hash  (cost=1023.00..1023.00 rows=9 width=36) (actual time=2.493..2.493 rows=15.00 loops=1)
+                          Buckets: 1024  Batches: 1  Memory Usage: 10kB
+                          Buffers: shared hit=648
+                          ->  Seq Scan on videos v  (cost=0.00..1023.00 rows=9 width=36) (actual time=0.139..2.485 rows=15.00 loops=1)
+                                Filter: (channel_id = 217)
+                                Rows Removed by Filter: 29985
+                                Buffers: shared hit=648
+Planning:
+  Buffers: shared hit=257
+Planning Time: 0.741 ms
+Execution Time: 16.482 ms
+=== R14 run 2 ===
+Sort  (cost=2387.42..2387.45 rows=9 width=84) (actual time=16.230..16.232 rows=15.00 loops=1)
+  Sort Key: (count(*) FILTER (WHERE ((r.reaction)::text = 'LIKE'::text))) DESC
+  Sort Method: quicksort  Memory: 26kB
+  Buffers: shared hit=1166
+  ->  GroupAggregate  (cost=2386.71..2387.28 rows=9 width=84) (actual time=16.204..16.221 rows=15.00 loops=1)
+        Group Key: v.video_id
+        Buffers: shared hit=1163
+        ->  Sort  (cost=2386.71..2386.76 rows=20 width=94) (actual time=16.190..16.193 rows=32.00 loops=1)
+              Sort Key: v.video_id
+              Sort Method: quicksort  Memory: 28kB
+              Buffers: shared hit=1163
+              ->  Hash Right Join  (cost=1023.11..2386.27 rows=20 width=94) (actual time=2.777..16.138 rows=32.00 loops=1)
+                    Hash Cond: ((r.video_id)::text = (v.video_id)::text)
+                    Buffers: shared hit=1160
+                    ->  Seq Scan on video_reactions r  (cost=0.00..1186.17 rows=67417 width=70) (actual time=0.010..10.414 rows=67417.00 loops=1)
+                          Buffers: shared hit=512
+                    ->  Hash  (cost=1023.00..1023.00 rows=9 width=36) (actual time=2.367..2.367 rows=15.00 loops=1)
+                          Buckets: 1024  Batches: 1  Memory Usage: 10kB
+                          Buffers: shared hit=648
+                          ->  Seq Scan on videos v  (cost=0.00..1023.00 rows=9 width=36) (actual time=0.136..2.361 rows=15.00 loops=1)
+                                Filter: (channel_id = 217)
+                                Rows Removed by Filter: 29985
+                                Buffers: shared hit=648
+Planning:
+  Buffers: shared hit=257
+Planning Time: 0.721 ms
+Execution Time: 16.297 ms
+=== R14 run 3 ===
+Sort  (cost=2387.42..2387.45 rows=9 width=84) (actual time=16.362..16.364 rows=15.00 loops=1)
+  Sort Key: (count(*) FILTER (WHERE ((r.reaction)::text = 'LIKE'::text))) DESC
+  Sort Method: quicksort  Memory: 26kB
+  Buffers: shared hit=1166
+  ->  GroupAggregate  (cost=2386.71..2387.28 rows=9 width=84) (actual time=16.335..16.352 rows=15.00 loops=1)
+        Group Key: v.video_id
+        Buffers: shared hit=1163
+        ->  Sort  (cost=2386.71..2386.76 rows=20 width=94) (actual time=16.320..16.323 rows=32.00 loops=1)
+              Sort Key: v.video_id
+              Sort Method: quicksort  Memory: 28kB
+              Buffers: shared hit=1163
+              ->  Hash Right Join  (cost=1023.11..2386.27 rows=20 width=94) (actual time=2.837..16.275 rows=32.00 loops=1)
+                    Hash Cond: ((r.video_id)::text = (v.video_id)::text)
+                    Buffers: shared hit=1160
+                    ->  Seq Scan on video_reactions r  (cost=0.00..1186.17 rows=67417 width=70) (actual time=0.009..10.495 rows=67417.00 loops=1)
+                          Buffers: shared hit=512
+                    ->  Hash  (cost=1023.00..1023.00 rows=9 width=36) (actual time=2.409..2.410 rows=15.00 loops=1)
+                          Buckets: 1024  Batches: 1  Memory Usage: 10kB
+                          Buffers: shared hit=648
+                          ->  Seq Scan on videos v  (cost=0.00..1023.00 rows=9 width=36) (actual time=0.140..2.403 rows=15.00 loops=1)
+                                Filter: (channel_id = 217)
+                                Rows Removed by Filter: 29985
+                                Buffers: shared hit=648
+Planning:
+  Buffers: shared hit=257
+Planning Time: 0.777 ms
+Execution Time: 16.429 ms

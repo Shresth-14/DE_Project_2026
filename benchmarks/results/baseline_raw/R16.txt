@@ -1,0 +1,111 @@
+=== R16 run 1 ===
+Limit  (cost=7283.90..7283.95 rows=20 width=44) (actual time=22.156..23.204 rows=20.00 loops=1)
+  Buffers: shared hit=12724
+  ->  Sort  (cost=7283.90..7291.39 rows=2999 width=44) (actual time=22.154..23.201 rows=20.00 loops=1)
+        Sort Key: (sum(a.revenue_inr)) DESC
+        Sort Method: top-N heapsort  Memory: 27kB
+        Buffers: shared hit=12724
+        ->  HashAggregate  (cost=7166.61..7204.09 rows=2999 width=44) (actual time=21.693..23.005 rows=1311.00 loops=1)
+              Group Key: v.channel_id
+              Batches: 1  Memory Usage: 721kB
+              Buffers: shared hit=12721
+              ->  Gather  (cost=2371.22..7142.77 rows=3178 width=9) (actual time=16.505..21.971 rows=3232.00 loops=1)
+                    Workers Planned: 1
+                    Workers Launched: 1
+                    Buffers: shared hit=12721
+                    ->  Nested Loop  (cost=1371.22..5824.97 rows=1869 width=9) (actual time=14.445..19.010 rows=1616.00 loops=2)
+                          Buffers: shared hit=12721
+                          ->  Hash Join  (cost=1370.93..5226.33 rows=1869 width=17) (actual time=14.417..15.396 rows=1616.00 loops=2)
+                                Hash Cond: (w.watch_id = a.watch_id)
+                                Buffers: shared hit=3024
+                                ->  Parallel Seq Scan on watch_events w  (cost=0.00..3248.47 rows=117647 width=20) (actual time=0.010..5.281 rows=100000.00 loops=2)
+                                      Buffers: shared hit=2072
+                                ->  Hash  (cost=1331.21..1331.21 rows=3178 width=13) (actual time=3.542..3.542 rows=3232.00 loops=2)
+                                      Buckets: 4096  Batches: 1  Memory Usage: 184kB
+                                      Buffers: shared hit=952
+                                      ->  Seq Scan on ad_impressions a  (cost=0.00..1331.21 rows=3178 width=13) (actual time=2.943..3.243 rows=3232.00 loops=2)
+                                            Filter: ((shown_at >= '2026-06-01 00:00:00+05:30'::timestamp with time zone) AND (shown_at < '2026-07-01 00:00:00+05:30'::timestamp with time zone))
+                                            Rows Removed by Filter: 53782
+                                            Buffers: shared hit=952
+                          ->  Index Scan using pk_videos on videos v  (cost=0.29..0.32 rows=1 width=16) (actual time=0.002..0.002 rows=1.00 loops=3232)
+                                Index Cond: ((video_id)::text = (w.video_id)::text)
+                                Index Searches: 3232
+                                Buffers: shared hit=9697
+Planning:
+  Buffers: shared hit=396
+Planning Time: 1.103 ms
+Execution Time: 23.280 ms
+=== R16 run 2 ===
+Limit  (cost=7283.90..7283.95 rows=20 width=44) (actual time=21.565..22.630 rows=20.00 loops=1)
+  Buffers: shared hit=12724
+  ->  Sort  (cost=7283.90..7291.39 rows=2999 width=44) (actual time=21.564..22.627 rows=20.00 loops=1)
+        Sort Key: (sum(a.revenue_inr)) DESC
+        Sort Method: top-N heapsort  Memory: 27kB
+        Buffers: shared hit=12724
+        ->  HashAggregate  (cost=7166.61..7204.09 rows=2999 width=44) (actual time=21.122..22.440 rows=1311.00 loops=1)
+              Group Key: v.channel_id
+              Batches: 1  Memory Usage: 721kB
+              Buffers: shared hit=12721
+              ->  Gather  (cost=2371.22..7142.77 rows=3178 width=9) (actual time=16.135..21.490 rows=3232.00 loops=1)
+                    Workers Planned: 1
+                    Workers Launched: 1
+                    Buffers: shared hit=12721
+                    ->  Nested Loop  (cost=1371.22..5824.97 rows=1869 width=9) (actual time=14.040..18.443 rows=1616.00 loops=2)
+                          Buffers: shared hit=12721
+                          ->  Hash Join  (cost=1370.93..5226.33 rows=1869 width=17) (actual time=14.013..14.967 rows=1616.00 loops=2)
+                                Hash Cond: (w.watch_id = a.watch_id)
+                                Buffers: shared hit=3024
+                                ->  Parallel Seq Scan on watch_events w  (cost=0.00..3248.47 rows=117647 width=20) (actual time=0.006..5.118 rows=100000.00 loops=2)
+                                      Buffers: shared hit=2072
+                                ->  Hash  (cost=1331.21..1331.21 rows=3178 width=13) (actual time=3.561..3.561 rows=3232.00 loops=2)
+                                      Buckets: 4096  Batches: 1  Memory Usage: 184kB
+                                      Buffers: shared hit=952
+                                      ->  Seq Scan on ad_impressions a  (cost=0.00..1331.21 rows=3178 width=13) (actual time=2.945..3.257 rows=3232.00 loops=2)
+                                            Filter: ((shown_at >= '2026-06-01 00:00:00+05:30'::timestamp with time zone) AND (shown_at < '2026-07-01 00:00:00+05:30'::timestamp with time zone))
+                                            Rows Removed by Filter: 53782
+                                            Buffers: shared hit=952
+                          ->  Index Scan using pk_videos on videos v  (cost=0.29..0.32 rows=1 width=16) (actual time=0.002..0.002 rows=1.00 loops=3232)
+                                Index Cond: ((video_id)::text = (w.video_id)::text)
+                                Index Searches: 3232
+                                Buffers: shared hit=9697
+Planning:
+  Buffers: shared hit=396
+Planning Time: 1.035 ms
+Execution Time: 22.714 ms
+=== R16 run 3 ===
+Limit  (cost=7283.90..7283.95 rows=20 width=44) (actual time=21.216..22.133 rows=20.00 loops=1)
+  Buffers: shared hit=12724
+  ->  Sort  (cost=7283.90..7291.39 rows=2999 width=44) (actual time=21.216..22.131 rows=20.00 loops=1)
+        Sort Key: (sum(a.revenue_inr)) DESC
+        Sort Method: top-N heapsort  Memory: 27kB
+        Buffers: shared hit=12724
+        ->  HashAggregate  (cost=7166.61..7204.09 rows=2999 width=44) (actual time=20.773..21.943 rows=1311.00 loops=1)
+              Group Key: v.channel_id
+              Batches: 1  Memory Usage: 721kB
+              Buffers: shared hit=12721
+              ->  Gather  (cost=2371.22..7142.77 rows=3178 width=9) (actual time=15.888..20.999 rows=3232.00 loops=1)
+                    Workers Planned: 1
+                    Workers Launched: 1
+                    Buffers: shared hit=12721
+                    ->  Nested Loop  (cost=1371.22..5824.97 rows=1869 width=9) (actual time=13.837..18.157 rows=1616.00 loops=2)
+                          Buffers: shared hit=12721
+                          ->  Hash Join  (cost=1370.93..5226.33 rows=1869 width=17) (actual time=13.809..14.749 rows=1616.00 loops=2)
+                                Hash Cond: (w.watch_id = a.watch_id)
+                                Buffers: shared hit=3024
+                                ->  Parallel Seq Scan on watch_events w  (cost=0.00..3248.47 rows=117647 width=20) (actual time=0.006..5.031 rows=100000.00 loops=2)
+                                      Buffers: shared hit=2072
+                                ->  Hash  (cost=1331.21..1331.21 rows=3178 width=13) (actual time=3.457..3.457 rows=3232.00 loops=2)
+                                      Buckets: 4096  Batches: 1  Memory Usage: 184kB
+                                      Buffers: shared hit=952
+                                      ->  Seq Scan on ad_impressions a  (cost=0.00..1331.21 rows=3178 width=13) (actual time=2.869..3.163 rows=3232.00 loops=2)
+                                            Filter: ((shown_at >= '2026-06-01 00:00:00+05:30'::timestamp with time zone) AND (shown_at < '2026-07-01 00:00:00+05:30'::timestamp with time zone))
+                                            Rows Removed by Filter: 53782
+                                            Buffers: shared hit=952
+                          ->  Index Scan using pk_videos on videos v  (cost=0.29..0.32 rows=1 width=16) (actual time=0.002..0.002 rows=1.00 loops=3232)
+                                Index Cond: ((video_id)::text = (w.video_id)::text)
+                                Index Searches: 3232
+                                Buffers: shared hit=9697
+Planning:
+  Buffers: shared hit=396
+Planning Time: 1.143 ms
+Execution Time: 22.224 ms

@@ -1,0 +1,45 @@
+=== R04 run 1 ===
+Limit  (cost=1156.41..1156.46 rows=20 width=44) (actual time=23.584..23.587 rows=20.00 loops=1)
+  Buffers: shared hit=651
+  ->  Sort  (cost=1156.41..1161.90 rows=2195 width=44) (actual time=23.583..23.585 rows=20.00 loops=1)
+        Sort Key: view_count DESC
+        Sort Method: top-N heapsort  Memory: 28kB
+        Buffers: shared hit=651
+        ->  Seq Scan on videos  (cost=0.00..1098.00 rows=2195 width=44) (actual time=0.020..23.327 rows=2191.00 loops=1)
+              Filter: (((title)::text ~~* '%tutorial%'::text) AND ((visibility)::text = 'PUBLIC'::text))
+              Rows Removed by Filter: 27809
+              Buffers: shared hit=648
+Planning:
+  Buffers: shared hit=87
+Planning Time: 0.392 ms
+Execution Time: 23.607 ms
+=== R04 run 2 ===
+Limit  (cost=1156.41..1156.46 rows=20 width=44) (actual time=23.682..23.685 rows=20.00 loops=1)
+  Buffers: shared hit=651
+  ->  Sort  (cost=1156.41..1161.90 rows=2195 width=44) (actual time=23.681..23.682 rows=20.00 loops=1)
+        Sort Key: view_count DESC
+        Sort Method: top-N heapsort  Memory: 28kB
+        Buffers: shared hit=651
+        ->  Seq Scan on videos  (cost=0.00..1098.00 rows=2195 width=44) (actual time=0.018..23.420 rows=2191.00 loops=1)
+              Filter: (((title)::text ~~* '%tutorial%'::text) AND ((visibility)::text = 'PUBLIC'::text))
+              Rows Removed by Filter: 27809
+              Buffers: shared hit=648
+Planning:
+  Buffers: shared hit=87
+Planning Time: 0.381 ms
+Execution Time: 23.704 ms
+=== R04 run 3 ===
+Limit  (cost=1156.41..1156.46 rows=20 width=44) (actual time=23.873..23.876 rows=20.00 loops=1)
+  Buffers: shared hit=651
+  ->  Sort  (cost=1156.41..1161.90 rows=2195 width=44) (actual time=23.872..23.874 rows=20.00 loops=1)
+        Sort Key: view_count DESC
+        Sort Method: top-N heapsort  Memory: 28kB
+        Buffers: shared hit=651
+        ->  Seq Scan on videos  (cost=0.00..1098.00 rows=2195 width=44) (actual time=0.019..23.615 rows=2191.00 loops=1)
+              Filter: (((title)::text ~~* '%tutorial%'::text) AND ((visibility)::text = 'PUBLIC'::text))
+              Rows Removed by Filter: 27809
+              Buffers: shared hit=648
+Planning:
+  Buffers: shared hit=87
+Planning Time: 0.414 ms
+Execution Time: 23.894 ms

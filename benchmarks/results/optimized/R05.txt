@@ -1,0 +1,75 @@
+=== R05 run 1 ===
+Limit  (cost=77.48..77.50 rows=6 width=48) (actual time=0.502..0.503 rows=4.00 loops=1)
+  Buffers: shared hit=19 read=3
+  ->  Sort  (cost=77.48..77.50 rows=6 width=48) (actual time=0.501..0.502 rows=4.00 loops=1)
+        Sort Key: w.started_at DESC
+        Sort Method: quicksort  Memory: 25kB
+        Buffers: shared hit=19 read=3
+        ->  Nested Loop  (cost=4.75..77.40 rows=6 width=48) (actual time=0.449..0.482 rows=4.00 loops=1)
+              Buffers: shared hit=16 read=3
+              ->  Bitmap Heap Scan on watch_events w  (cost=4.47..27.57 rows=6 width=24) (actual time=0.434..0.443 rows=4.00 loops=1)
+                    Recheck Cond: (user_id = 1042)
+                    Heap Blocks: exact=4
+                    Buffers: shared hit=4 read=3
+                    ->  Bitmap Index Scan on idx_watch_events_user_started  (cost=0.00..4.46 rows=6 width=0) (actual time=0.422..0.423 rows=4.00 loops=1)
+                          Index Cond: (user_id = 1042)
+                          Index Searches: 1
+                          Buffers: shared read=3
+              ->  Index Scan using pk_videos on videos v  (cost=0.29..8.30 rows=1 width=36) (actual time=0.009..0.009 rows=1.00 loops=4)
+                    Index Cond: ((video_id)::text = (w.video_id)::text)
+                    Index Searches: 4
+                    Buffers: shared hit=12
+Planning:
+  Buffers: shared hit=287 read=2
+Planning Time: 1.375 ms
+Execution Time: 0.532 ms
+=== R05 run 2 ===
+Limit  (cost=77.48..77.50 rows=6 width=48) (actual time=0.076..0.077 rows=4.00 loops=1)
+  Buffers: shared hit=22
+  ->  Sort  (cost=77.48..77.50 rows=6 width=48) (actual time=0.075..0.076 rows=4.00 loops=1)
+        Sort Key: w.started_at DESC
+        Sort Method: quicksort  Memory: 25kB
+        Buffers: shared hit=22
+        ->  Nested Loop  (cost=4.75..77.40 rows=6 width=48) (actual time=0.029..0.057 rows=4.00 loops=1)
+              Buffers: shared hit=19
+              ->  Bitmap Heap Scan on watch_events w  (cost=4.47..27.57 rows=6 width=24) (actual time=0.018..0.026 rows=4.00 loops=1)
+                    Recheck Cond: (user_id = 1042)
+                    Heap Blocks: exact=4
+                    Buffers: shared hit=7
+                    ->  Bitmap Index Scan on idx_watch_events_user_started  (cost=0.00..4.46 rows=6 width=0) (actual time=0.008..0.009 rows=4.00 loops=1)
+                          Index Cond: (user_id = 1042)
+                          Index Searches: 1
+                          Buffers: shared hit=3
+              ->  Index Scan using pk_videos on videos v  (cost=0.29..8.30 rows=1 width=36) (actual time=0.007..0.007 rows=1.00 loops=4)
+                    Index Cond: ((video_id)::text = (w.video_id)::text)
+                    Index Searches: 4
+                    Buffers: shared hit=12
+Planning:
+  Buffers: shared hit=289
+Planning Time: 0.766 ms
+Execution Time: 0.104 ms
+=== R05 run 3 ===
+Limit  (cost=77.48..77.50 rows=6 width=48) (actual time=0.084..0.086 rows=4.00 loops=1)
+  Buffers: shared hit=22
+  ->  Sort  (cost=77.48..77.50 rows=6 width=48) (actual time=0.084..0.084 rows=4.00 loops=1)
+        Sort Key: w.started_at DESC
+        Sort Method: quicksort  Memory: 25kB
+        Buffers: shared hit=22
+        ->  Nested Loop  (cost=4.75..77.40 rows=6 width=48) (actual time=0.034..0.064 rows=4.00 loops=1)
+              Buffers: shared hit=19
+              ->  Bitmap Heap Scan on watch_events w  (cost=4.47..27.57 rows=6 width=24) (actual time=0.022..0.030 rows=4.00 loops=1)
+                    Recheck Cond: (user_id = 1042)
+                    Heap Blocks: exact=4
+                    Buffers: shared hit=7
+                    ->  Bitmap Index Scan on idx_watch_events_user_started  (cost=0.00..4.46 rows=6 width=0) (actual time=0.009..0.009 rows=4.00 loops=1)
+                          Index Cond: (user_id = 1042)
+                          Index Searches: 1
+                          Buffers: shared hit=3
+              ->  Index Scan using pk_videos on videos v  (cost=0.29..8.30 rows=1 width=36) (actual time=0.008..0.008 rows=1.00 loops=4)
+                    Index Cond: ((video_id)::text = (w.video_id)::text)
+                    Index Searches: 4
+                    Buffers: shared hit=12
+Planning:
+  Buffers: shared hit=289
+Planning Time: 0.871 ms
+Execution Time: 0.117 ms
